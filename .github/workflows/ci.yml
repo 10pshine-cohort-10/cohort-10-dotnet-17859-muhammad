@@ -38,11 +38,22 @@ jobs:
       - name: build
         run: dotnet build backend/Docket.sln --configuration Release --no-restore
 
-      - name: test
+      - name: test (all)
+        if: matrix.os == 'ubuntu-latest'
         run: >
           dotnet test backend/Docket.Tests/Docket.Tests.csproj
           --configuration Release
           --no-build
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory TestResults
+
+      - name: test (unit only)
+        if: matrix.os != 'ubuntu-latest'
+        run: >
+          dotnet test backend/Docket.Tests/Docket.Tests.csproj
+          --configuration Release
+          --no-build
+          --filter "Category!=Integration"
           --logger "trx;LogFileName=test-results.trx"
           --results-directory TestResults
 

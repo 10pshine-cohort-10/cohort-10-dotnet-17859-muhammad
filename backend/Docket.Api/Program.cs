@@ -1,6 +1,16 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using Serilog;
 using Docket.Api.Errors;
+using Docket.Application.Auth;
+using Docket.Infrastructure;
+using Docket.Infrastructure.Auth;
+using Docket.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +22,41 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .WriteTo.Console()
     .WriteTo.Seq(context.Configuration["Seq:ServerUrl"] ?? "http://localhost:5342"));
 
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
+
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddHealthChecks();
+
+var jwt = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
+    ?? throw new InvalidOperationException("Jwt configuration is missing.");
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.MapInboundClaims = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwt.Issuer,
+            ValidateAudience = true,
+            ValidAudience = jwt.Audience,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromSeconds(30),
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = JwtRegisteredClaimNames.Sub
+        };
+    });
+
+builder.Services
+    .AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy => policy.RequireRole(Roles.Admin));
 
 var app = builder.Build();
 
@@ -30,10 +70,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.MapHealthChecks("/health");
+
+if (app.Configuration.GetValue("Database:MigrateOnStartup", true) &&
+    (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing")))
+{
+    await app.Services.InitializeDatabaseAsync();
+}
 
 app.Run();
 

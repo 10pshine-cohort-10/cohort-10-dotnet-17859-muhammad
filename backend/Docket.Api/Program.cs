@@ -31,6 +31,16 @@ builder.Services.AddOpenApi();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddHealthChecks();
 
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+if (allowedOrigins.Length > 0)
+{
+    builder.Services.AddCors(options => options.AddPolicy("web", policy => policy
+        .WithOrigins(allowedOrigins)
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()));
+}
+
 var jwt = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
     ?? throw new InvalidOperationException("Jwt configuration is missing.");
 
@@ -62,6 +72,11 @@ var app = builder.Build();
 
 app.UseExceptionHandler();
 app.UseSerilogRequestLogging();
+
+if (allowedOrigins.Length > 0)
+{
+    app.UseCors("web");
+}
 
 if (app.Environment.IsDevelopment())
 {

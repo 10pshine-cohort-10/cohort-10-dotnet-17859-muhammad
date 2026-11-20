@@ -1,0 +1,9 @@
+@Docket.Api_HostAddress = http://localhost:5003
+
+GET {{Docket.Api_HostAddress}}/health
+Accept: text/plain
+
+###
+
+GET {{Docket.Api_HostAddress}}/openapi/v1.json
+Accept: application/json

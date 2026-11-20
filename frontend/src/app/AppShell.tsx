@@ -50,7 +50,13 @@ function NavItem({ to, label, icon: Icon, end, onNavigate }: NavItemProps) {
   )
 }
 
-function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+function SidebarContent({
+  onNavigate,
+  showWordmark = true,
+}: {
+  onNavigate?: () => void
+  showWordmark?: boolean
+}) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
 
@@ -61,9 +67,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <>
-      <Wordmark />
+      {showWordmark ? <Wordmark /> : null}
 
-      <nav aria-label="Primary" className="mt-10 grid gap-1">
+      <nav aria-label="Primary" className={clsx('grid gap-1', showWordmark ? 'mt-10' : 'mt-2')}>
         <NavItem to="/" label="Today" icon={LayoutDashboard} end onNavigate={onNavigate} />
         <NavItem to="/tasks" label="Tasks" icon={ListTodo} onNavigate={onNavigate} />
         <NavItem to="/profile" label="Profile" icon={UserRound} onNavigate={onNavigate} />
@@ -160,7 +166,7 @@ export function AppShell() {
                 <X aria-hidden="true" className="size-4" strokeWidth={1.8} />
               </button>
             </div>
-            <SidebarContent onNavigate={() => setMenuOpen(false)} />
+            <SidebarContent onNavigate={() => setMenuOpen(false)} showWordmark={false} />
           </div>
         </div>
       ) : null}

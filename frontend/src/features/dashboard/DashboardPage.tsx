@@ -59,8 +59,7 @@ export function DashboardPage() {
           <div>
             <p className="text-lg font-medium">Nothing on the board yet.</p>
             <p className="mt-2 max-w-[54ch] text-sm leading-relaxed text-muted">
-              Tasks you create will land here with their priority, category, and due date. Until
-              then, this is the quiet version of the day.
+              Tasks you create will appear here with their priority, category, and due date.
             </p>
           </div>
 

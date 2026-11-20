@@ -53,7 +53,7 @@ export function LoginPage() {
       <div>
         <h1 className="text-[30px] leading-tight font-semibold tracking-[-0.03em]">Sign in</h1>
         <p className="mt-2 text-sm text-muted">
-          Use the account you registered with. Sessions refresh on their own.
+          Use the account you registered with.
         </p>
       </div>
 

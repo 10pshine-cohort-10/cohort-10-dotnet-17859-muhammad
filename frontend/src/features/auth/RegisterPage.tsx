@@ -82,7 +82,7 @@ export function RegisterPage() {
           Create your account
         </h1>
         <p className="mt-2 text-sm text-muted">
-          One account, your own task board. You can sign in on any browser.
+          Your own task board, in any browser.
         </p>
       </div>
 

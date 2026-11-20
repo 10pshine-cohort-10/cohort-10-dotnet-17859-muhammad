@@ -26,12 +26,11 @@ function NotFoundPage() {
     <div className="grid min-h-dvh place-items-center px-6">
       <div className="w-full max-w-[420px]">
         <Wordmark />
-        <p className="mt-10 text-xs font-medium tracking-[0.08em] text-muted uppercase">404</p>
-        <h1 className="mt-2 text-[26px] font-semibold tracking-[-0.02em]">
-          That page does not exist.
+        <h1 className="mt-10 text-[26px] font-semibold tracking-[-0.02em]">
+          This page does not exist.
         </h1>
         <p className="mt-2 text-sm text-muted">
-          The link may be old, or the page may have moved. The board is still where you left it.
+          The link may be old, or the page has moved.
         </p>
         <Link to="/" className={buttonStyles('secondary', 'mt-6')}>
           Back to today

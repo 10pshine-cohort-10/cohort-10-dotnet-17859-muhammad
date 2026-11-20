@@ -61,7 +61,7 @@ export function ProfilePage() {
       <section className="mt-12 border-t border-line pt-6">
         <h2 className="text-base font-semibold">Session</h2>
         <p className="mt-1 max-w-[56ch] text-sm text-muted">
-          Signing out revokes the refresh token on this device. Your tasks stay where they are.
+          Signing out ends this session on this device. Your tasks stay where they are.
         </p>
         <Button
           variant="secondary"

@@ -1,0 +1,53 @@
+# Build output
+bin/
+obj/
+artifacts/
+publish/
+*.dll
+*.pdb
+*.nupkg
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.DotSettings.user
+
+# Test and coverage output
+TestResults/
+coverage/
+coverage.*.xml
+*.trx
+playwright-report/
+test-results/
+blob-report/
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.tsbuildinfo
+.eslintcache
+.storybook-out/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+*.pfx
+*.snk
+
+# Logs and local data
+logs/
+*.log
+uploads/
+backups/
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini

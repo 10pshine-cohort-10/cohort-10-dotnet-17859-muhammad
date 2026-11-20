@@ -47,6 +47,13 @@ logs/
 uploads/
 backups/
 
+# Local agent tooling and working artifacts
+.opencode/
+.impeccable/review/
+.impeccable/questions/
+.impeccable/mocks/
+.impeccable/build/
+
 # OS noise
 .DS_Store
 Thumbs.db

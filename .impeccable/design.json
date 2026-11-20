@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-20T20:00:00Z",
+  "title": "Design System: Docket",
+  "extensions": {
+    "colorMeta": {
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Cool Paper",
+        "canonical": "oklch(0.965 0.006 165)",
+        "tonalRamp": [
+          "oklch(0.22 0.01 165)",
+          "oklch(0.35 0.01 165)",
+          "oklch(0.5 0.008 165)",
+          "oklch(0.65 0.008 165)",
+          "oklch(0.78 0.007 165)",
+          "oklch(0.88 0.007 165)",
+          "oklch(0.94 0.006 165)",
+          "oklch(0.965 0.006 165)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Clean Sheet",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": [
+          "oklch(0.2 0 0)",
+          "oklch(0.35 0 0)",
+          "oklch(0.5 0 0)",
+          "oklch(0.65 0 0)",
+          "oklch(0.8 0 0)",
+          "oklch(0.9 0 0)",
+          "oklch(0.96 0 0)",
+          "oklch(1 0 0)"
+        ]
+      },
+      "ink": {
+        "role": "primary",
+        "displayName": "Deep Ink",
+        "canonical": "oklch(0.205 0.015 190)",
+        "tonalRamp": [
+          "oklch(0.15 0.015 190)",
+          "oklch(0.205 0.015 190)",
+          "oklch(0.3 0.015 190)",
+          "oklch(0.45 0.014 190)",
+          "oklch(0.6 0.012 190)",
+          "oklch(0.75 0.01 190)",
+          "oklch(0.88 0.008 190)",
+          "oklch(0.96 0.006 190)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Stamp Teal",
+        "canonical": "oklch(0.44 0.08 195)",
+        "tonalRamp": [
+          "oklch(0.2 0.04 195)",
+          "oklch(0.3 0.06 195)",
+          "oklch(0.44 0.08 195)",
+          "oklch(0.55 0.07 195)",
+          "oklch(0.65 0.06 195)",
+          "oklch(0.78 0.04 195)",
+          "oklch(0.88 0.025 195)",
+          "oklch(0.94 0.018 195)"
+        ]
+      },
+      "urgent": {
+        "role": "secondary",
+        "displayName": "Signal Persimmon",
+        "canonical": "oklch(0.51 0.17 35)",
+        "tonalRamp": [
+          "oklch(0.2 0.07 35)",
+          "oklch(0.35 0.12 35)",
+          "oklch(0.51 0.17 35)",
+          "oklch(0.62 0.15 35)",
+          "oklch(0.72 0.11 35)",
+          "oklch(0.82 0.07 35)",
+          "oklch(0.91 0.035 35)",
+          "oklch(0.955 0.022 35)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "oklch(0.48 0.012 190)",
+        "tonalRamp": [
+          "oklch(0.18 0.012 190)",
+          "oklch(0.3 0.012 190)",
+          "oklch(0.48 0.012 190)",
+          "oklch(0.6 0.01 190)",
+          "oklch(0.7 0.008 190)",
+          "oklch(0.8 0.007 190)",
+          "oklch(0.9 0.005 190)",
+          "oklch(0.96 0.004 190)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page titles and the dashboard greeting." },
+      "headline": { "displayName": "Headline", "purpose": "Auth page headings." },
+      "title": { "displayName": "Title", "purpose": "Section headings." },
+      "body": { "displayName": "Body", "purpose": "Descriptions, list content, and controls." },
+      "label": { "displayName": "Label", "purpose": "The single uppercase date label on the auth panel." }
+    },
+    "shadows": [
+      {
+        "name": "drawer-lift",
+        "value": "0 1px 2px oklch(0.2 0.02 190 / 0.05), 0 12px 32px -16px oklch(0.2 0.02 190 / 0.22)",
+        "purpose": "Mobile navigation drawer only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "page-enter",
+        "value": "220ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Content enters 6px upward on route change; disabled under reduced motion."
+      },
+      {
+        "name": "state-color",
+        "value": "150ms linear",
+        "purpose": "Hover and focus color transitions on controls."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single main action on a screen; ink ground with clean-sheet text.",
+      "html": "<button class=\"ds-btn-primary\">Sign in</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 16px; border: 0; border-radius: 5px; background: var(--color-ink); color: var(--color-surface); font-family: var(--font-sans); font-size: 14px; font-weight: 500; transition: background-color 150ms linear; } .ds-btn-primary:hover { background: var(--color-ink-soft); } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.5; pointer-events: none; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "A supported action or navigation shortcut; rule border on clean sheet.",
+      "html": "<button class=\"ds-btn-secondary\">Open tasks</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border: 1px solid var(--color-line); border-radius: 5px; background: var(--color-surface); color: var(--color-ink); font-family: var(--font-sans); font-size: 14px; font-weight: 500; transition: border-color 150ms linear; } .ds-btn-secondary:hover { border-color: var(--color-line-strong); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Form field with a quiet rule border and a teal focus ring.",
+      "html": "<input class=\"ds-input\" type=\"email\" placeholder=\"you@example.com\" />",
+      "css": ".ds-input { height: 40px; width: 100%; padding: 0 12px; border: 1px solid var(--color-line); border-radius: 5px; background: var(--color-surface); color: var(--color-ink); font-family: var(--font-sans); font-size: 15px; } .ds-input::placeholder { color: var(--color-muted); } .ds-input:hover { border-color: var(--color-line-strong); } .ds-input:focus { border-color: var(--color-accent); outline: 2px solid var(--color-accent); outline-offset: 0; box-shadow: 0 0 0 4px oklch(0.44 0.08 195 / 0.15); }"
+    },
+    {
+      "name": "Navigation Item",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Sidebar row; active state is a clean sheet with a rule and a teal square.",
+      "html": "<a class=\"ds-nav-item ds-nav-item-active\" href=\"#\"><span>Today</span><span class=\"ds-nav-dot\"></span></a>",
+      "css": ".ds-nav-item { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border: 1px solid transparent; color: var(--color-ink-soft); font-family: var(--font-sans); font-size: 14px; text-decoration: none; } .ds-nav-item:hover { background: var(--color-surface); color: var(--color-ink); } .ds-nav-item-active { background: var(--color-surface); border-color: var(--color-line); color: var(--color-ink); font-weight: 500; } .ds-nav-dot { margin-left: auto; width: 6px; height: 6px; background: var(--color-accent); }"
+    },
+    {
+      "name": "Status Count",
+      "kind": "custom",
+      "refersTo": "stat",
+      "description": "A dashboard status cell: 38px tabular number above a muted label, separated by rules.",
+      "html": "<div class=\"ds-stat\"><div class=\"ds-stat-value\">12</div><div class=\"ds-stat-label\">In progress</div></div>",
+      "css": ".ds-stat { padding: 20px 24px; font-family: var(--font-sans); } .ds-stat-value { color: var(--color-ink); font-size: 38px; font-weight: 600; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; } .ds-stat-label { margin-top: 8px; color: var(--color-muted); font-size: 14px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Task Ledger",
+    "overview": "Docket looks like a ledger kept by someone who respects their own time: cool paper, dark ink, one stamp of teal, and a single persimmon mark when something is urgent. The interface is built from rules, margins, and aligned columns rather than cards and shadows. It should feel written in, not decorated.",
+    "keyCharacteristics": [
+      "Cool pale sage canvas with white working surfaces.",
+      "Near-black ink text; teal used as a stamp, not a wash.",
+      "One-pixel rules and generous margins instead of shadows and cards.",
+      "Public Sans throughout, with tight display tracking and tabular numerals.",
+      "Flat at rest; only the mobile drawer lifts off the page."
+    ],
+    "rules": [
+      {
+        "name": "The One Stamp Rule",
+        "body": "Teal covers no more than about a tenth of any screen. It marks the active thing and then stops. Persimmon is stricter still: urgency or destruction, never decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Count Rule",
+        "body": "Any number that can change — task counts, due dates — uses font-variant-numeric: tabular-nums.",
+        "section": "typography"
+      },
+      {
+        "name": "The Rule-Not-Shadow Rule",
+        "body": "If a section needs separation, add a rule and space. Do not add a card, a border radius, or a shadow to invent hierarchy.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do separate sections with a 1px --color-line rule and 32–48px of space.",
+      "Do use tabular numerals for every count and date.",
+      "Do keep body text at 4.5:1 or better and test against the actual canvas, not white.",
+      "Do keep the teal accent on the active thing only."
+    ],
+    "donts": [
+      "Don't wrap sections in cards or nest cards.",
+      "Don't use gradients, glass, or decorative blur.",
+      "Don't put a one-sided accent bar on a rounded box.",
+      "Don't use monospace for labels, metadata, or technical flavor.",
+      "Don't put a kicker above a page heading."
+    ]
+  }
+}

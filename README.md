@@ -3,7 +3,7 @@
 A full-stack task manager: ASP.NET Core 10 API, React 19 SPA, EF Core on SQL Server,
 Serilog logging, and a test suite built with xUnit, Vitest, and Playwright.
 
-> Status: Week 1 — foundation. Authentication is the next slice.
+> Status: Week 1 — foundation, authentication, and the web shell.
 
 ## Stack
 
@@ -14,7 +14,7 @@ Serilog logging, and a test suite built with xUnit, Vitest, and Playwright.
 | Auth | ASP.NET Core Identity, JWT + refresh tokens |
 | Logging | Serilog → console + Seq |
 | Backend tests | xUnit, FluentAssertions, NSubstitute, Testcontainers, Respawn |
-| Frontend | React 19, TypeScript, Vite, Tailwind, TanStack Query |
+| Frontend | React 19, TypeScript, Vite, Tailwind CSS 4, TanStack Query |
 | Frontend tests | Vitest, Testing Library, Playwright |
 | Quality | SonarQube, coverage gates, Impeccable detector |
 
@@ -31,10 +31,15 @@ Serilog logging, and a test suite built with xUnit, Vitest, and Playwright.
 cp .env.example .env          # local values; .env is git-ignored
 docker compose up -d          # SQL Server, Seq, Mailpit, SonarQube
 dotnet run --project backend/Docket.Api
+
+cd frontend
+npm install
+npm run dev
 ```
 
 | Service | URL |
 | --- | --- |
+| Web app | http://localhost:5173 |
 | API | http://localhost:5003 |
 | OpenAPI UI | http://localhost:5003/scalar (Development) |
 | Health | http://localhost:5003/health |
@@ -42,7 +47,10 @@ dotnet run --project backend/Docket.Api
 | Mailpit | http://localhost:8025 |
 | SonarQube | http://localhost:9000 (admin/admin on first run) |
 
-The API runs on the host; SQL Server, Seq, Mailpit, and SonarQube run in containers.
+The API runs on the host; SQL Server, Seq, Mailpit, and SonarQube run in containers. The SPA
+reads `VITE_API_BASE_URL` (default `http://localhost:5003`); the API allows the dev origin
+`http://localhost:5173` through CORS. Register an account in the browser — it is created in
+SQL Server and signed in immediately.
 
 ## Build and test
 
@@ -50,9 +58,15 @@ The API runs on the host; SQL Server, Seq, Mailpit, and SonarQube run in contain
 dotnet build backend/Docket.sln
 dotnet test backend/Docket.Tests/Docket.Tests.csproj
 ./scripts/verify.sh          # what must pass before merging into main
+
+cd frontend
+npm run lint
+npm run typecheck
+npm test
+npm run build
 ```
 
-Windows: `./scripts/verify.ps1`.
+Windows: `./scripts/verify.ps1` for the backend gate.
 
 ## Repository layout
 
@@ -63,11 +77,20 @@ backend/
   Docket.Infrastructure/  EF Core, Identity, JWT, email, jobs
   Docket.Api/             controllers, middleware, DI, OpenAPI
   Docket.Tests/           unit, integration, architecture, E2E-facing tests
-frontend/                React SPA (added in the next slice)
+frontend/                React SPA (Vite, Tailwind, TanStack Query)
 deploy/                  containers and deployment assets
 docs/                    ADRs and design notes
 compose.yaml             local SQL Server, Seq, Mailpit, SonarQube
+PRODUCT.md               product truth for the design workflow
+DESIGN.md                visual system: tokens, components, rules
 ```
+
+## Design workflow
+
+The web surface is designed with [Impeccable](https://impeccable.style/). `PRODUCT.md` owns
+product truth, `DESIGN.md` owns the visual system (tokens, components, do's and don'ts), and
+`npm run detect` runs the anti-slop detector in CI. The design direction is "The Task
+Ledger": cool paper, ink, one teal stamp, rules instead of cards.
 
 ## Roles
 

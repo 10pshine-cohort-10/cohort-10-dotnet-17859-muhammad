@@ -76,6 +76,33 @@ Exactly two roles: `Admin` and `User`.
 - `User` sees and manages only their own tasks.
 - `Admin` sees and manages every task and every user.
 
+## Authentication
+
+| Method | Route | Notes |
+| --- | --- | --- |
+| `POST` | `/api/v1/auth/register` | Creates a `User`, returns tokens, sets refresh cookie |
+| `POST` | `/api/v1/auth/login` | Returns an access token, sets refresh cookie |
+| `POST` | `/api/v1/auth/refresh` | Rotates the refresh token; reuse revokes the family |
+| `POST` | `/api/v1/auth/logout` | Revokes the refresh token and clears the cookie |
+| `GET` | `/api/v1/auth/me` | Requires `Authorization: Bearer <access token>` |
+| `GET` | `/api/v1/admin/ping` | Requires the `Admin` role |
+
+Access tokens live 15 minutes and are signed with HS256. Refresh tokens live 7 days, are
+stored as SHA-256 hashes, and travel in an `HttpOnly`, `SameSite=Lax` cookie scoped to
+`/api/v1/auth`. The development signing key in `appsettings.Development.json` is for local
+use only; production must supply `Jwt__SigningKey` (32+ characters) through the environment.
+
+## Testing notes
+
+Unit tests and the health smoke test need no Docker. Auth integration tests start a real
+SQL Server container with Testcontainers; on a machine without Docker run:
+
+```bash
+dotnet test backend/Docket.Tests/Docket.Tests.csproj --filter "Category!=Integration"
+```
+
+CI runs the full suite on Linux and unit tests on macOS and Windows.
+
 ## Logging
 
 Serilog writes structured logs to the console and to Seq at `http://localhost:5342`

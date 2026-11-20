@@ -55,7 +55,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
           </div>
         </div>
 
-        <p className="text-xs text-surface/60">Two roles. One board. No noise.</p>
+        <p className="text-xs text-surface/60">Two roles. One board.</p>
       </aside>
 
       <main className="flex flex-col px-5 py-8 sm:px-10 lg:px-16">

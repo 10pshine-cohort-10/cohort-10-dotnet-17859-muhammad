@@ -15,7 +15,7 @@ authenticated dashboard that needs no server rendering.
 ## Users
 
 Individuals managing their own workload: they capture tasks, decide what to do next, and
-keep due dates from slipping. A separate Admin role exists for oversight and support — it
+keep due dates from slipping. A separate Admin role exists for oversight and support. It
 sees and manages every task and every user, but is not the primary daily user.
 
 ## Product Purpose
@@ -60,7 +60,7 @@ productivity moralizing.
 ## Evidence on Hand
 
 No real user data, testimonials, or customer claims exist. Demo content will be seeded and
-labelled synthetic. Future work must not invent customers, benchmarks, or usage numbers.
+labeled synthetic. Future work must not invent customers, benchmarks, or usage numbers.
 
 ## Product Principles
 

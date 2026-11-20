@@ -107,7 +107,7 @@ the page turning into a dashboard of widgets. Every screen has one obvious next 
 empty states read as a clean page rather than a missing feature.
 
 This is an Operate surface. Brand lives in precision: the mark, the rules, the exact spacing,
-the shape of a checkbox. It rejects the default SaaS look — no cream-and-serif hero, no
+the shape of a checkbox. It rejects the default SaaS look: no cream-and-serif hero, no
 gradients, no glass, no rounded card grid, no icon tiles.
 
 **Key Characteristics:**
@@ -160,7 +160,7 @@ ledger does not shift when numbers change.
 - **Label** (500, 12px/1, 0.08em, uppercase): the date group on the auth panel only. Never a
   kicker above a page heading.
 
-**The Tabular Count Rule.** Any number that can change — task counts, due dates — uses
+**The Tabular Count Rule.** Any number that can change (task counts, due dates) uses
 `font-variant-numeric: tabular-nums`.
 
 ## Layout
@@ -192,7 +192,7 @@ a card, a border radius, or a shadow to invent hierarchy.
 ## Shapes
 
 Corners are small and functional: 3px for markers, 5px for controls, 8px for overlays. The
-wordmark is a hard square with a smaller square inside and a persimmon dot — the only
+wordmark is a hard square with a smaller square inside and a persimmon dot, the only
 decorative geometry in the system. Checkboxes are 16px squares with a 1px border; checked
 state fills the square rather than drawing a tick. Buttons and inputs share the 5px radius.
 

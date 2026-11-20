@@ -186,7 +186,7 @@
       },
       {
         "name": "The Tabular Count Rule",
-        "body": "Any number that can change — task counts, due dates — uses font-variant-numeric: tabular-nums.",
+        "body": "Any number that can change (task counts, due dates) uses font-variant-numeric: tabular-nums.",
         "section": "typography"
       },
       {

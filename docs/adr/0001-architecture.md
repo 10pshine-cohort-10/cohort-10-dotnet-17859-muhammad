@@ -1,4 +1,4 @@
-# ADR 0001 — Layered API plus React SPA
+# ADR 0001: Layered API plus React SPA
 
 - Status: Accepted
 - Date: 2026-11-20

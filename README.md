@@ -1,9 +1,9 @@
-# Docket — Task Management System
+# Docket: Task Management System
 
 A full-stack task manager: ASP.NET Core 10 API, React 19 SPA, EF Core on SQL Server,
 Serilog logging, and a test suite built with xUnit, Vitest, and Playwright.
 
-> Status: Week 1 — foundation, authentication, and the web shell.
+> Status: Week 1 complete (foundation, authentication, web shell).
 
 ## Stack
 
@@ -49,7 +49,7 @@ npm run dev
 
 The API runs on the host; SQL Server, Seq, Mailpit, and SonarQube run in containers. The SPA
 reads `VITE_API_BASE_URL` (default `http://localhost:5003`); the API allows the dev origin
-`http://localhost:5173` through CORS. Register an account in the browser — it is created in
+`http://localhost:5173` through CORS. Register an account in the browser; it is created in
 SQL Server and signed in immediately.
 
 ## Build and test
@@ -72,7 +72,7 @@ Windows: `./scripts/verify.ps1` for the backend gate.
 
 ```
 backend/
-  Docket.Domain/          entities, enums, invariants — no dependencies
+  Docket.Domain/          entities, enums, invariants (no dependencies)
   Docket.Application/     use cases, DTOs, validators, abstractions
   Docket.Infrastructure/  EF Core, Identity, JWT, email, jobs
   Docket.Api/             controllers, middleware, DI, OpenAPI
@@ -135,4 +135,4 @@ internal details.
 
 ## License
 
-Assignment project — not licensed for redistribution.
+Assignment project. Not licensed for redistribution.

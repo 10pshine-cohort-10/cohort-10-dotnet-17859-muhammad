@@ -1,7 +1,7 @@
+using Docket.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Docket.Infrastructure.Identity;
 
 namespace Docket.Infrastructure.Persistence;
 

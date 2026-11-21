@@ -1,13 +1,13 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
+using Docket.Application.Auth;
+using Docket.Infrastructure.Auth;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Docket.Application.Auth;
-using Docket.Infrastructure.Auth;
 
 namespace Docket.Api.Controllers;
 

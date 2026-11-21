@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
-using FluentAssertions;
 using Docket.Tests.Infrastructure;
+using FluentAssertions;
 
 namespace Docket.Tests.Auth;
 

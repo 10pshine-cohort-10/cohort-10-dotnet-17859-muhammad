@@ -52,6 +52,11 @@ reads `VITE_API_BASE_URL` (default `http://localhost:5003`); the API allows the 
 `http://localhost:5173` through CORS. Register an account in the browser; it is created in
 SQL Server and signed in immediately.
 
+Changing `MSSQL_PORT` in `.env` only changes the port Compose publishes on the host. The API
+reads `ConnectionStrings:Default`, which targets 1433 by default. If you change the port, set
+`ConnectionStrings__Default` in the shell that runs `dotnet run`, using the example in
+`.env.example`.
+
 ## Build and test
 
 ```bash

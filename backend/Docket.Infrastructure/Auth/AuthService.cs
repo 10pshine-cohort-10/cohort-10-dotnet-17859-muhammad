@@ -214,16 +214,12 @@ public sealed class AuthService(
 
     private async Task RevokeFamilyAsync(Guid familyId, DateTimeOffset now, CancellationToken cancellationToken)
     {
-        var active = await database.RefreshTokens
+        // ExecuteUpdate is atomic and bypasses rowversion conflicts from concurrent rotations.
+        await database.RefreshTokens
             .Where(token => token.FamilyId == familyId && token.RevokedAtUtc == null)
-            .ToListAsync(cancellationToken);
-
-        foreach (var token in active)
-        {
-            token.RevokedAtUtc = now;
-        }
-
-        await database.SaveChangesAsync(cancellationToken);
+            .ExecuteUpdateAsync(
+                setters => setters.SetProperty(token => token.RevokedAtUtc, now),
+                cancellationToken);
     }
 
     private static AuthResult InvalidCredentials()

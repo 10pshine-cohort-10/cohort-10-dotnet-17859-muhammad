@@ -216,6 +216,37 @@ public sealed class AuthEndpointTests
     }
 
     [Fact]
+    public async Task Concurrent_refresh_should_allow_exactly_one_rotation()
+    {
+        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", new
+        {
+            email = ApiTestClient.UniqueEmail(),
+            password = ApiTestClient.ValidPassword,
+            displayName = "Concurrent User"
+        });
+        registerResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+        var cookie = ApiTestClient.ReadRefreshCookie(registerResponse);
+        cookie.Should().NotBeNull();
+
+        using var firstRequest = new HttpRequestMessage(HttpMethod.Post, "/api/v1/auth/refresh")
+            .WithCookie(cookie!);
+        using var secondRequest = new HttpRequestMessage(HttpMethod.Post, "/api/v1/auth/refresh")
+            .WithCookie(cookie!);
+
+        var responses = await Task.WhenAll(
+            _client.SendAsync(firstRequest),
+            _client.SendAsync(secondRequest));
+
+        responses.Count(response => response.StatusCode == HttpStatusCode.OK).Should().Be(1);
+        responses.Count(response => response.StatusCode == HttpStatusCode.Unauthorized).Should().Be(1);
+
+        foreach (var response in responses)
+        {
+            response.Dispose();
+        }
+    }
+
+    [Fact]
     public async Task Admin_endpoint_should_be_forbidden_for_regular_user()
     {
         var payload = await _client.RegisterAsync();

@@ -29,7 +29,7 @@ public sealed class HealthEndpointTests : IClassFixture<HealthEndpointTests.Heal
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Testing");
-            builder.UseSetting("Database:MigrateOnStartup", "false");
+            builder.UseSetting("Database:InitializeOnStartup", "false");
             builder.UseSetting(
                 "ConnectionStrings:Default",
                 "Server=127.0.0.1,1;Database=Docket;User Id=sa;Password=unused;TrustServerCertificate=True");

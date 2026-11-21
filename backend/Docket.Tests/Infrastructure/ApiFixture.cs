@@ -30,13 +30,26 @@ public sealed class ApiFixture : IAsyncLifetime
         });
 
         // Force the host to start so migrations and role seeding run before tests.
-        using var client = Factory.CreateClient();
+        // WebApplicationFactory bootstraps synchronously, so keep that work off the async continuation.
+        await Task.Run(() =>
+        {
+            using var client = Factory.CreateClient();
+        });
     }
 
     public async Task DisposeAsync()
     {
-        await Factory.DisposeAsync();
-        await _database.DisposeAsync();
+        try
+        {
+            if (Factory is not null)
+            {
+                await Factory.DisposeAsync();
+            }
+        }
+        finally
+        {
+            await _database.DisposeAsync();
+        }
     }
 }
 

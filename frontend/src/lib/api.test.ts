@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { ApiError, apiRequest, getAccessToken, setAccessToken } from './api'
+import { ApiError, apiRequest, getAccessToken, refreshSession, setAccessToken } from './api'
 import type { AuthResponse } from './types'
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -80,5 +80,13 @@ describe('apiRequest', () => {
       expect(apiError.code).toBe('email_taken')
       expect(apiError.fieldErrors).toEqual({ email: ['Already registered'] })
     }
+  })
+
+  it('treats 401 as no session and 500 as a server error', async () => {
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 401 }))
+    await expect(refreshSession()).resolves.toBeNull()
+
+    fetchMock.mockResolvedValueOnce(jsonResponse({ title: 'Unavailable' }, 503))
+    await expect(refreshSession()).rejects.toBeInstanceOf(ApiError)
   })
 })

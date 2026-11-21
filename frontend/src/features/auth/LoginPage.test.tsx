@@ -61,6 +61,7 @@ describe('LoginPage', () => {
 
     expect(await screen.findByText('Enter your email address')).toBeInTheDocument()
     expect(screen.getByText('Enter your password')).toBeInTheDocument()
+    expect(screen.getByLabelText('Email')).toHaveAttribute('aria-describedby', 'email-error')
     expect(loginMock).not.toHaveBeenCalled()
   })
 

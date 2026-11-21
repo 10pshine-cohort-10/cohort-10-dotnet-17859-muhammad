@@ -1,5 +1,11 @@
 import { clsx } from 'clsx'
-import type { ComponentProps, ReactNode } from 'react'
+import {
+  cloneElement,
+  isValidElement,
+  type ComponentProps,
+  type ReactElement,
+  type ReactNode,
+} from 'react'
 
 interface FieldProps {
   label: string
@@ -12,12 +18,18 @@ interface FieldProps {
 export function Field({ label, htmlFor, error, hint, children }: FieldProps) {
   const describedBy = error ? `${htmlFor}-error` : hint ? `${htmlFor}-hint` : undefined
 
+  const control = isValidElement(children)
+    ? cloneElement(children as ReactElement<{ 'aria-describedby'?: string }>, {
+        'aria-describedby': describedBy,
+      })
+    : children
+
   return (
     <div className="grid gap-1.5">
       <label htmlFor={htmlFor} className="text-sm font-medium text-ink">
         {label}
       </label>
-      <div aria-describedby={describedBy}>{children}</div>
+      <div>{control}</div>
       {error ? (
         <p id={`${htmlFor}-error`} className="text-sm text-urgent">
           {error}

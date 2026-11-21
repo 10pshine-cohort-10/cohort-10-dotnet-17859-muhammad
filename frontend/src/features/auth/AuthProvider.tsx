@@ -7,6 +7,7 @@ import { AuthContext, type AuthStatus, type AuthContextValue } from './auth-cont
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>('loading')
   const [user, setUser] = useState<UserProfile | null>(null)
+  const [restoreAttempt, setRestoreAttempt] = useState(0)
 
   useEffect(() => {
     let cancelled = false
@@ -23,12 +24,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       })
       .catch(() => {
-        if (!cancelled) setStatus('anonymous')
+        if (!cancelled) setStatus('error')
       })
 
     return () => {
       cancelled = true
     }
+  }, [restoreAttempt])
+
+  const retryRestore = useCallback(() => {
+    setStatus('loading')
+    setRestoreAttempt((attempt) => attempt + 1)
   }, [])
 
   const login = useCallback(async (credentials: Credentials) => {
@@ -56,8 +62,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const value = useMemo<AuthContextValue>(
-    () => ({ status, user, login, register, logout }),
-    [status, user, login, register, logout],
+    () => ({ status, user, login, register, logout, retryRestore }),
+    [status, user, login, register, logout, retryRestore],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

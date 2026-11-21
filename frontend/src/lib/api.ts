@@ -61,7 +61,8 @@ export async function refreshSession(): Promise<AuthResponse | null> {
     headers: { Accept: 'application/json' },
   })
     .then(async (response) => {
-      if (!response.ok) return null
+      if (response.status === 401 || response.status === 403) return null
+      if (!response.ok) throw await toApiError(response)
       return (await response.json()) as AuthResponse
     })
     .finally(() => {

@@ -8,7 +8,7 @@ import {
   X,
   type LucideIcon,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import { Wordmark } from '../components/Wordmark'
 import { useAuth } from '../features/auth/useAuth'
@@ -93,13 +93,53 @@ function SidebarContent({
 
 export function AppShell() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const panelRef = useRef<HTMLDivElement>(null)
   const location = useLocation()
+
+  useEffect(() => {
+    const media = window.matchMedia?.('(min-width: 1024px)')
+    if (!media) return
+
+    function onBreakpointChange(event: MediaQueryListEvent) {
+      if (event.matches) setMenuOpen(false)
+    }
+
+    media.addEventListener('change', onBreakpointChange)
+    return () => media.removeEventListener('change', onBreakpointChange)
+  }, [])
 
   useEffect(() => {
     if (!menuOpen) return
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') setMenuOpen(false)
+      if (event.key === 'Escape') {
+        setMenuOpen(false)
+        return
+      }
+
+      if (event.key !== 'Tab') return
+
+      const panel = panelRef.current
+      if (!panel) return
+
+      const focusable = Array.from(
+        panel.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      )
+
+      if (focusable.length === 0) return
+
+      const first = focusable[0]!
+      const last = focusable[focusable.length - 1]!
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
     }
 
     document.addEventListener('keydown', onKeyDown)
@@ -113,11 +153,14 @@ export function AppShell() {
 
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[248px_minmax(0,1fr)]">
-      <aside className="hidden border-r border-line px-5 py-6 lg:flex lg:flex-col">
+      <aside
+        className="hidden border-r border-line px-5 py-6 lg:flex lg:flex-col"
+        inert={menuOpen ? true : undefined}
+      >
         <SidebarContent />
       </aside>
 
-      <div className="flex min-h-dvh flex-col">
+      <div className="flex min-h-dvh flex-col" inert={menuOpen ? true : undefined}>
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-canvas px-5 lg:hidden">
           <Wordmark />
           <button
@@ -148,6 +191,7 @@ export function AppShell() {
             className="absolute inset-0 bg-ink/45"
           />
           <div
+            ref={panelRef}
             id="mobile-navigation"
             role="dialog"
             aria-modal="true"

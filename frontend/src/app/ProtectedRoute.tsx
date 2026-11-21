@@ -1,12 +1,14 @@
 import { Navigate, Outlet, useLocation } from 'react-router'
 import { useAuth } from '../features/auth/useAuth'
 import { AuthLoading } from './AuthLoading'
+import { SessionError } from './SessionError'
 
 export function ProtectedRoute() {
-  const { status } = useAuth()
+  const { status, retryRestore } = useAuth()
   const location = useLocation()
 
   if (status === 'loading') return <AuthLoading />
+  if (status === 'error') return <SessionError onRetry={retryRestore} />
   if (status === 'anonymous') {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />
   }

@@ -33,7 +33,11 @@ internal sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> log
         problem.Extensions["traceId"] = traceId;
 
         httpContext.Response.StatusCode = problem.Status.Value;
-        await httpContext.Response.WriteAsJsonAsync(problem, cancellationToken);
+        await httpContext.Response.WriteAsJsonAsync(
+            problem,
+            options: null,
+            contentType: "application/problem+json",
+            cancellationToken: cancellationToken);
 
         return true;
     }

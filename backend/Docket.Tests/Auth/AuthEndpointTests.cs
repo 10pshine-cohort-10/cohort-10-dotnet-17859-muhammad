@@ -159,6 +159,63 @@ public sealed class AuthEndpointTests
     }
 
     [Fact]
+    public async Task Register_should_reject_a_name_that_is_too_short_after_trimming()
+    {
+        var response = await _client.PostAsJsonAsync("/api/v1/auth/register", new
+        {
+            email = ApiTestClient.UniqueEmail(),
+            password = ApiTestClient.ValidPassword,
+            displayName = " A "
+        });
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        (await response.Content.ReadAsStringAsync()).Should().Contain("displayName");
+    }
+
+    [Fact]
+    public async Task Refresh_reuse_should_revoke_only_the_presented_family()
+    {
+        var email = ApiTestClient.UniqueEmail();
+        var registerResponse = await _client.PostAsJsonAsync("/api/v1/auth/register", new
+        {
+            email,
+            password = ApiTestClient.ValidPassword,
+            displayName = "Family User"
+        });
+        registerResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var firstCookie = ApiTestClient.ReadRefreshCookie(registerResponse);
+        firstCookie.Should().NotBeNull();
+
+        var firstRefresh = await _client.SendAsync(
+            new HttpRequestMessage(HttpMethod.Post, "/api/v1/auth/refresh").WithCookie(firstCookie!));
+        firstRefresh.StatusCode.Should().Be(HttpStatusCode.OK);
+        var rotatedCookie = ApiTestClient.ReadRefreshCookie(firstRefresh);
+        rotatedCookie.Should().NotBeNull();
+
+        var loginResponse = await _client.PostAsJsonAsync("/api/v1/auth/login", new
+        {
+            email,
+            password = ApiTestClient.ValidPassword
+        });
+        loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var otherSessionCookie = ApiTestClient.ReadRefreshCookie(loginResponse);
+        otherSessionCookie.Should().NotBeNull();
+
+        var reuseResponse = await _client.SendAsync(
+            new HttpRequestMessage(HttpMethod.Post, "/api/v1/auth/refresh").WithCookie(firstCookie!));
+        reuseResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+
+        var revokedFamilyResponse = await _client.SendAsync(
+            new HttpRequestMessage(HttpMethod.Post, "/api/v1/auth/refresh").WithCookie(rotatedCookie!));
+        revokedFamilyResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+
+        var otherSessionResponse = await _client.SendAsync(
+            new HttpRequestMessage(HttpMethod.Post, "/api/v1/auth/refresh").WithCookie(otherSessionCookie!));
+        otherSessionResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
     public async Task Admin_endpoint_should_be_forbidden_for_regular_user()
     {
         var payload = await _client.RegisterAsync();

@@ -30,7 +30,9 @@ public sealed class DocketDbContext(DbContextOptions<DocketDbContext> options)
                 .IsRequired();
             entity.Property(token => token.ReplacedByTokenHash)
                 .HasMaxLength(64);
+            entity.Property(token => token.RowVersion).IsRowVersion();
             entity.HasIndex(token => token.TokenHash).IsUnique();
+            entity.HasIndex(token => token.FamilyId);
             entity.HasIndex(token => new { token.UserId, token.ExpiresAtUtc });
             entity.HasOne(token => token.User)
                 .WithMany()

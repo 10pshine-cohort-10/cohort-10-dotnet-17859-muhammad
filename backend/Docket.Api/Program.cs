@@ -91,10 +91,12 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");
 
-if (app.Configuration.GetValue("Database:MigrateOnStartup", true) &&
-    (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing")))
+if (app.Configuration.GetValue("Database:InitializeOnStartup", true))
 {
-    await app.Services.InitializeDatabaseAsync();
+    var migrateOnStartup = app.Configuration.GetValue("Database:MigrateOnStartup", true) &&
+        (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"));
+
+    await app.Services.InitializeDatabaseAsync(migrateOnStartup);
 }
 
 app.Run();

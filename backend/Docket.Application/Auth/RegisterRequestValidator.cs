@@ -12,8 +12,8 @@ public sealed class RegisterRequestValidator : AbstractValidator<RegisterRequest
             .MaximumLength(256);
 
         RuleFor(x => x.DisplayName)
-            .NotEmpty()
-            .Length(2, 100);
+            .Must(name => !string.IsNullOrWhiteSpace(name) && name.Trim().Length is >= 2 and <= 100)
+            .WithMessage("Name must be between 2 and 100 characters.");
 
         RuleFor(x => x.Password)
             .NotEmpty()

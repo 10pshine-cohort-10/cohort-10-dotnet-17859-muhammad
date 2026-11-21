@@ -18,40 +18,52 @@ public sealed class AuthService(
 {
     private readonly JwtOptions _jwt = jwtOptions.Value;
 
-    public async Task<AuthResult> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken)
+    public Task<AuthResult> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken)
     {
-        var email = request.Email.Trim();
-        var user = new ApplicationUser
-        {
-            Id = Guid.NewGuid(),
-            Email = email,
-            UserName = email,
-            DisplayName = request.DisplayName.Trim(),
-            CreatedAtUtc = clock.GetUtcNow()
-        };
+        var strategy = database.Database.CreateExecutionStrategy();
 
-        var created = await userManager.CreateAsync(user, request.Password);
-        if (!created.Succeeded)
+        return strategy.ExecuteAsync(async () =>
         {
-            if (created.Errors.Any(error => error.Code is "DuplicateEmail" or "DuplicateUserName"))
+            await using var transaction = await database.Database.BeginTransactionAsync(cancellationToken);
+
+            var email = request.Email.Trim();
+            var user = new ApplicationUser
             {
-                return AuthResult.Failure(409, "email_taken", "An account with this email already exists.");
+                Id = Guid.NewGuid(),
+                Email = email,
+                UserName = email,
+                DisplayName = request.DisplayName.Trim(),
+                CreatedAtUtc = clock.GetUtcNow()
+            };
+
+            var created = await userManager.CreateAsync(user, request.Password);
+            if (!created.Succeeded)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+
+                if (created.Errors.Any(error => error.Code is "DuplicateEmail" or "DuplicateUserName"))
+                {
+                    return AuthResult.Failure(409, "email_taken", "An account with this email already exists.");
+                }
+
+                return AuthResult.Failure(
+                    400,
+                    "validation_error",
+                    string.Join(" ", created.Errors.Select(error => error.Description)));
             }
 
-            return AuthResult.Failure(
-                400,
-                "validation_error",
-                string.Join(" ", created.Errors.Select(error => error.Description)));
-        }
+            var assigned = await userManager.AddToRoleAsync(user, Roles.User);
+            if (!assigned.Succeeded)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw new InvalidOperationException(
+                    $"Could not assign the '{Roles.User}' role: {string.Join("; ", assigned.Errors.Select(error => error.Description))}");
+            }
 
-        var assigned = await userManager.AddToRoleAsync(user, Roles.User);
-        if (!assigned.Succeeded)
-        {
-            throw new InvalidOperationException(
-                $"Could not assign the '{Roles.User}' role: {string.Join("; ", assigned.Errors.Select(error => error.Description))}");
-        }
-
-        return await IssueAsync(user, [Roles.User], cancellationToken);
+            var result = await IssueAsync(user, [Roles.User], cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+            return result;
+        });
     }
 
     public async Task<AuthResult> LoginAsync(LoginRequest request, CancellationToken cancellationToken)
@@ -97,22 +109,34 @@ public sealed class AuthService(
             return InvalidRefreshToken();
         }
 
-        if (!stored.IsActive(now))
+        if (stored.RevokedAtUtc is not null)
         {
-            // A revoked or expired token was presented: assume reuse and revoke the family.
-            await RevokeActiveTokensAsync(stored.UserId, now, cancellationToken);
+            await RevokeFamilyAsync(stored.FamilyId, now, cancellationToken);
+            return InvalidRefreshToken();
+        }
+
+        if (now >= stored.ExpiresAtUtc)
+        {
             return InvalidRefreshToken();
         }
 
         stored.RevokedAtUtc = now;
-        var (rawToken, replacement) = CreateRefreshToken(stored.UserId, now);
+        var (rawToken, replacement) = CreateRefreshToken(stored.UserId, now, stored.FamilyId);
         stored.ReplacedByTokenHash = replacement.TokenHash;
         database.RefreshTokens.Add(replacement);
 
         var roles = await userManager.GetRolesAsync(stored.User);
         var access = tokenService.Create(stored.User, roles);
 
-        await database.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await database.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            // Another request claimed this token first. Its replacement is the only valid one.
+            return InvalidRefreshToken();
+        }
 
         return AuthResult.Success(
             new AuthResponse(access.Value, access.ExpiresAtUtc, Map(stored.User, roles)),
@@ -169,13 +193,17 @@ public sealed class AuthService(
             rawToken);
     }
 
-    private (string RawToken, RefreshToken Entity) CreateRefreshToken(Guid userId, DateTimeOffset now)
+    private (string RawToken, RefreshToken Entity) CreateRefreshToken(
+        Guid userId,
+        DateTimeOffset now,
+        Guid? familyId = null)
     {
         var rawToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
         var entity = new RefreshToken
         {
             Id = Guid.NewGuid(),
             UserId = userId,
+            FamilyId = familyId ?? Guid.NewGuid(),
             TokenHash = Hash(rawToken),
             CreatedAtUtc = now,
             ExpiresAtUtc = now.AddDays(_jwt.RefreshTokenDays)
@@ -184,10 +212,10 @@ public sealed class AuthService(
         return (rawToken, entity);
     }
 
-    private async Task RevokeActiveTokensAsync(Guid userId, DateTimeOffset now, CancellationToken cancellationToken)
+    private async Task RevokeFamilyAsync(Guid familyId, DateTimeOffset now, CancellationToken cancellationToken)
     {
         var active = await database.RefreshTokens
-            .Where(token => token.UserId == userId && token.RevokedAtUtc == null)
+            .Where(token => token.FamilyId == familyId && token.RevokedAtUtc == null)
             .ToListAsync(cancellationToken);
 
         foreach (var token in active)
